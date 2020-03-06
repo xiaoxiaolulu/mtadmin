@@ -3,25 +3,25 @@
         <h1>商家列表</h1>
         <div class="list-group">
             <el-row :gutter="20">
-                <!--                <el-col :span="6" class="col-group">-->
-                <!--                    <router-link to="/merchant/detail">-->
-                <!--                        <el-card class="card-group add-card">+</el-card>-->
-                <!--                    </router-link>-->
-                <!--                </el-col>-->
+                <el-col :span="6" class="col-group">
+                    <router-link to="/merchant/detail">
+                        <el-card class="card-group add-card">+</el-card>
+                    </router-link>
+                </el-col>
                 <el-col :span="6" class="col-group" v-for="merchant in merchants" :key="merchant.id">
-                    <el-card class="card-group">
-                        <img :src="merchant.logo" class="thumbnail" alt="">
-                        <div class="title">{{merchant.name}}</div>
-                    </el-card>
-                    <!--                    <router-link :to="'/merchant/detail?id='+merchant.id">-->
-                    <!--                    </router-link>-->
+                    <router-link :to="'/merchant/detail?id='+merchant.id">
+                        <el-card class="card-group">
+                            <img :src="merchant.logo" class="thumbnail" alt="">
+                            <div class="title">{{merchant.name}}</div>
+                        </el-card>
+                    </router-link>
                 </el-col>
             </el-row>
             <el-pagination
                     background
                     layout="prev, pager, next"
                     :total="total"
-                    :page-size="12"
+                    :page-size="10"
                     :current-page="page"
                     class="pagination"
                     @current-change="onCurrentChange">
@@ -32,7 +32,6 @@
 
 <script>
     import {Card, Col, Pagination, Row} from "element-ui";
-    import axios from 'axios';
 
     export default {
         name: "Merchant",
@@ -57,21 +56,16 @@
                 this.getMerchants(page)
             },
             getMerchants(page) {
-                const token = this.$auth.token;
-                axios.get("http://127.0.0.1:8100/cms/merchant", {
-                    params: {
-                        page: page
-                    },
-                    headers: {
-                        "Authorization": "JWT " + token
-                    }
-                }).then(res => {
+                this.$loading.show();
+                this.$http.getMerchants(page).then(res => {
                     const data = res.data;
                     this.merchants = data.results;
                     this.total = data.count;
-                    this.page = page
+                    this.page = page;
+                    this.$loading.hide();
                 }).catch(err => {
-                    console.log(err)
+                    console.log(err);
+                    this.$loading.hide()
                 })
             }
         },

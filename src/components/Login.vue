@@ -21,7 +21,6 @@
 
 <script>
     import {Button, Row, Col, Form, Input, FormItem} from 'element-ui'
-    import axios from 'axios'
 
     export default {
         name: 'Login',
@@ -71,16 +70,19 @@
                         username: this.loginForm.username,
                         password: this.loginForm.password
                     };
-                    axios.post("http://127.0.0.1:8100/cms/login", params).then(res => {
-                        const data = res.data;
-                        const token = data.token;
-                        const user = data.user;
-                        this.$auth.setUserToken(user,token);
-                        this.$router.push("/");
 
-                    }).catch(err => {
-                        console.log(err);
-                    })
+                    this.$loading.show();
+                    this.$http.login(params).then(res => {
+                            const data = res.data;
+                            const token = data.token;
+                            const user = data.user;
+                            this.$auth.setUserToken(user,token);
+                            this.$router.push("/");
+                            this.$loading.hide();
+                        }).catch(err => {
+                            console.log(err);
+                            this.$loading.hide();
+                        })
                 })
             }
         }
